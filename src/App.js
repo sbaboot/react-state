@@ -1,36 +1,42 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
+import GenerateEmployee from './GenerateEmployee';
+import DisplayQuotes from './DisplayQuotes';
 import "./App.css";
 
-import Quotes from "./Quotes";
+const sampleEmployee = {
+  character: 'Sandy la meuf',
+  quote: "Tout est possible avec Sandy",
+  image: 'https://media.tenor.com/images/73bd10544fcdb55f7781c1592c207be9/tenor.gif'
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      work: props.work
+      // on peut mettre notre sampleEmployee par défaut
+      // afin d'avoir toujours un employé d'affiché
+      quote: sampleEmployee
     };
-  };
+  }
 
-  handleClick = () => {
-    this.setState({ work: !this.state.work });
-  };
+  getEmployee() {
+    // Récupération de l'employé via fetch
+    fetch("https://thesimpsonsquoteapi.glitch.me/quotes?count=num")
+      .then(response => response.json())
+      .then(data => {
+        // Une fois les données récupérées, on va mettre à jour notre state avec les nouvelles données
+        this.setState({
+          quote: data[0],
+        });
+      });
+  }
 
   render() {
-    const logoWork = this.state.work ? 'Working' : 'Not-Working';
-    const buttonWork = this.state.work ? 'Homer is working' : "Homer doesn't work"
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className={logoWork} alt="logo" />
-          <h1 className="App-title">Simpsons Quotes</h1>
-          <button
-            onClick={this.handleClick}
-          >
-            {buttonWork}
-          </button>
-        </header>
-        <Quotes />
+        <h1>API Simpson's Quotes</h1>
+        <GenerateEmployee selectEmployee={() => this.getEmployee()} />
+        <DisplayQuotes character={this.state.quote.character} quote={this.state.quote.quote} image={this.state.quote.image} />
       </div>
     );
   }
